@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String URL_JSON_OBJECT = "https://www.metaweather.com/api/location/search/?query=london";
     private static final String URL_JSON_ARRAY = "https://www.metaweather.com/api/location/search/?query=san";
     private static final String URL_XML = "http://flash.weather.com.cn/wmaps/xml/china.xml";
+    private static final String URL_GSON = "http://www.weather.com.cn/data/sk/101010100.html";
     private static final String URL_IMAGE = "http://qnimage.dancebook.com.cn/f720786f444d0973159a9ffca1d2d2c2.jpg";
 
     @Override
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mQueue.add(getXMLRequest());
+                mQueue.add(getGsonRequest());
 //                mImageLoader.get(URL_IMAGE, mImageListener, 800, 500);
 //                initNetworkImage();
             }
@@ -124,6 +125,23 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("TAG", error.getMessage(), error);
+            }
+        });
+    }
+
+    private GsonRequest<Weather> getGsonRequest() {
+        return new GsonRequest<>(URL_GSON, Weather.class, new Response.Listener<Weather>() {
+            @Override
+            public void onResponse(Weather response) {
+                WeatherInfo weatherInfo = response.getWeatherinfo();
+                Log.d("TAG", "city is " + weatherInfo.getCity());
+                Log.d("TAG", "temp is " + weatherInfo.getTemp());
+                Log.d("TAG", "time is " + weatherInfo.getTime());
             }
         }, new Response.ErrorListener() {
             @Override
