@@ -1,9 +1,11 @@
 package com.jaycee88.volleydemo;
 
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -11,6 +13,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
@@ -31,10 +34,12 @@ public class MainActivity extends AppCompatActivity {
 
     Button mButton;
     TextView mText;
+    ImageView mImage;
 
     private static final String URL_BAI_DU = "https://www.baidu.com/";
     private static final String URL_JSON_OBJECT = "https://www.metaweather.com/api/location/search/?query=london";
     private static final String URL_JSON_ARRAY = "https://www.metaweather.com/api/location/search/?query=san";
+    private static final String URL_IMAGE = "http://qnimage.dancebook.com.cn/f720786f444d0973159a9ffca1d2d2c2.jpg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +50,26 @@ public class MainActivity extends AppCompatActivity {
 
         mButton = (Button) findViewById(R.id.button);
         mText = (TextView) findViewById(R.id.text);
+        mImage = (ImageView) findViewById(R.id.image);
 
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mQueue.add(getJsonArrayRequest());
+                mQueue.add(getImageRequest());
+            }
+        });
+    }
+
+    private ImageRequest getImageRequest() {
+        return new ImageRequest(URL_IMAGE, new Response.Listener<Bitmap>() {
+            @Override
+            public void onResponse(Bitmap response) {
+                mImage.setImageBitmap(response);
+            }
+        }, 800, 500, ImageView.ScaleType.CENTER_CROP, Bitmap.Config.RGB_565, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
             }
         });
     }
@@ -105,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private JsonArrayRequest getJsonArrayRequest() {
-        return new JsonArrayRequest(URL_JSON_OBJECT, new Response.Listener<JSONArray>() {
+        return new JsonArrayRequest(URL_JSON_ARRAY, new Response.Listener<JSONArray>() {
             @Override
             public void onResponse(JSONArray response) {
                 mText.setText(response.toString());
