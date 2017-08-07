@@ -17,6 +17,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     Button mButton;
     TextView mText;
     ImageView mImage;
+    NetworkImageView mNetworkImage;
 
     private static final String URL_BAI_DU = "https://www.baidu.com/";
     private static final String URL_JSON_OBJECT = "https://www.metaweather.com/api/location/search/?query=london";
@@ -54,12 +56,14 @@ public class MainActivity extends AppCompatActivity {
         mButton = (Button) findViewById(R.id.button);
         mText = (TextView) findViewById(R.id.text);
         mImage = (ImageView) findViewById(R.id.image);
+        mNetworkImage = (NetworkImageView) findViewById(R.id.network_image);
 
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 //                mQueue.add(getImageRequest());
-                mImageLoader.get(URL_IMAGE, mImageListener, 800, 500);
+//                mImageLoader.get(URL_IMAGE, mImageListener, 800, 500);
+                initNetworkImage();
             }
         });
 
@@ -69,6 +73,12 @@ public class MainActivity extends AppCompatActivity {
     private void initImageLoader() {
         mImageLoader = new ImageLoader(mQueue, new BitmapCache());
         mImageListener = ImageLoader.getImageListener(mImage, R.mipmap.ic_launcher, R.mipmap.ic_launcher);
+    }
+
+    private void initNetworkImage() {
+        mNetworkImage.setDefaultImageResId(R.mipmap.ic_launcher);
+        mNetworkImage.setErrorImageResId(R.mipmap.ic_launcher);
+        mNetworkImage.setImageUrl(URL_IMAGE, mImageLoader);
     }
 
     private ImageRequest getImageRequest() {
