@@ -3,6 +3,7 @@ package com.jaycee88.volleydemo;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,7 +24,10 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String URL_BAI_DU = "https://www.baidu.com/";
     private static final String URL_JSON_OBJECT = "https://www.metaweather.com/api/location/search/?query=london";
     private static final String URL_JSON_ARRAY = "https://www.metaweather.com/api/location/search/?query=san";
+    private static final String URL_XML = "http://flash.weather.com.cn/wmaps/xml/china.xml";
     private static final String URL_IMAGE = "http://qnimage.dancebook.com.cn/f720786f444d0973159a9ffca1d2d2c2.jpg";
 
     @Override
@@ -61,9 +66,9 @@ public class MainActivity extends AppCompatActivity {
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                mQueue.add(getImageRequest());
+                mQueue.add(getXMLRequest());
 //                mImageLoader.get(URL_IMAGE, mImageListener, 800, 500);
-                initNetworkImage();
+//                initNetworkImage();
             }
         });
 
@@ -91,6 +96,39 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
 
+            }
+        });
+    }
+
+    private XMLRequest getXMLRequest() {
+        return new XMLRequest(URL_XML, new Response.Listener<XmlPullParser>() {
+            @Override
+            public void onResponse(XmlPullParser response) {
+                try {
+                    int eventType = response.getEventType();
+                    while (eventType != XmlPullParser.END_DOCUMENT) {
+                        switch (eventType) {
+                            case XmlPullParser.START_TAG:
+                                String nodename = response.getName();
+                                if ("city".equals(nodename)) {
+                                    String pName = response.getAttributeValue(0);
+                                    Log.d("TAG", "pName is " + pName);
+                                }
+                                break;
+                        }
+                        eventType = response.next();
+                    }
+                } catch (XmlPullParserException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("TAG", error.getMessage(), error);
             }
         });
     }
