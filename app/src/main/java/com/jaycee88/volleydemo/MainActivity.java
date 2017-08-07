@@ -13,6 +13,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -31,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     // RequestQueue内部的设计就是非常合适高并发的，因此我们不必为每一次HTTP请求都创建一个RequestQueue对象，
     // 这是非常浪费资源的，基本上在每一个需要和网络交互的Activity中创建一个RequestQueue对象就足够了。
     RequestQueue mQueue;
+    ImageLoader mImageLoader;
+    ImageLoader.ImageListener mImageListener;
 
     Button mButton;
     TextView mText;
@@ -55,9 +58,17 @@ public class MainActivity extends AppCompatActivity {
         mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mQueue.add(getImageRequest());
+//                mQueue.add(getImageRequest());
+                mImageLoader.get(URL_IMAGE, mImageListener, 800, 500);
             }
         });
+
+        initImageLoader();
+    }
+
+    private void initImageLoader() {
+        mImageLoader = new ImageLoader(mQueue, new BitmapCache());
+        mImageListener = ImageLoader.getImageListener(mImage, R.mipmap.ic_launcher, R.mipmap.ic_launcher);
     }
 
     private ImageRequest getImageRequest() {
